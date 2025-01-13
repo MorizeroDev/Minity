@@ -102,6 +102,64 @@ You can retrieve the data in another scene like this:
 SceneRouter.FetchParameters<Data>();
 ```
 
+# UI Manager
+
+Quickly build easy-to-use, managed UIs by implementing abstract classes `ManagedUIReturnValueOnly<T, R>`, `ManagedUI<T, P>`, and `ManagedUI<T, P, R>`.
+
+In the design of Minity, we consider that each UI can have "parameters" and "return values", and the results returned by the "UI" are passed to subsequent processing functions via callbacks. Of course, we also provide asynchronous functions for your choice.
+
+For generic parameters:
+
+- `T`: A Type ID for the UI. Generally, you should specify this as the specific derived class.
+- `P`: The Parameter type for the UI.
+- `R`: The Return Value type for the UI.
+
+Let's assume we have an `InputBox`, which pops up a window for the player to enter a name, then returns the entered name.
+
+We can use it like this:
+
+```c#
+public class InputBox : ManagedUI<InputBox, string, string> {}
+```
+
+If you feel that using just `string` isn't intuitive enough, you can further encapsulate it:
+
+```c#
+public class InputBoxRequest {
+    public string Title;
+    public string Prompt;
+}
+
+public class InputBoxResponse {
+    public string PlayerName;
+}
+
+public class InputBox : ManagedUI<InputBox, InputBoxRequest, InputBoxResponse> {}
+```
+
+Next, we need to bind it with the prefab at the point of initializing the UI manager:
+
+```c#
+[RuntimeInitializeOnLoadMethod]
+public static void SetupUI()
+{
+    UIManager.Setup(new []
+    {
+        // Both methods are acceptable
+        UI.FromPrefab(prefab),
+        UI.FromResources("path/to/your/prefab"),
+    });
+}
+```
+
+Now, we can use the UI directly through any of the following methods:
+
+```c#
+InputBox.Open("Please enter your name", (name) => Debug.Log($"The player name is {name}"));
+
+var playerName = await InputBox.OpenAsync("Please enter your name");
+```
+
 ## **Custom Loading Animations**
 
 You can create custom loading animations by extending `LoadingAnimator` and assigning it to the scene router.  
@@ -115,7 +173,9 @@ public class BlackFade : LoadingAnimator
 
     public override void AboutToLoad()
     {
-        Panel.Milease(UMN.Color, Color.clear, Color.black, 0.5f)
+        MilInstantAnimator.Start(
+            	0.5f / Panel.MQuad(x => x.color, Color.clear, Color.black)
+        	)
             .Then(
                 new Action(ReadyToLoad).AsMileaseKeyEvent()
             )
@@ -125,7 +185,9 @@ public class BlackFade : LoadingAnimator
 
     public override void OnLoaded()
     {
-        Panel.Milease(UMN.Color, Color.black, Color.clear, 0.5f)
+        MilInstantAnimator.Start(
+            	0.5f / Panel.MQuad(x => x.color, Color.black, Color.clear)
+        	)
             .Then(
                 new Action(FinishLoading).AsMileaseKeyEvent()
             )

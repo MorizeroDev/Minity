@@ -2,7 +2,7 @@
     "name": "dev.milthm.minity",
     "author": "Morizero",
     "displayName": "Minity",
-    "version": "0.6.0",
+    "version": "1.0.0",
     "unity": "2021.3",
     "description": "A Unity extension framework that includes features such as object pooling, scene routing, UI manager, and behavior trees."
 }
