@@ -6,9 +6,9 @@ using Milutools.Milutools.General;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Milutools.Recycle
+namespace Milutools.Pooling
 {
-    public static class RecyclePool
+    public static class ObjectPool
     {
         /// <summary>
         /// When enabled, the object pool will track the usage of objects and periodically release
@@ -18,8 +18,8 @@ namespace Milutools.Recycle
         /// </summary>
         public static bool AutoReleaseUnusedObjects { get; set; } = true;
         
-        internal static readonly Dictionary<EnumIdentifier, RecycleContext> contexts = new();
-        internal static readonly Dictionary<GameObject, RecyclableObject> objectDict = new();
+        internal static readonly Dictionary<EnumIdentifier, PoolContext> contexts = new();
+        internal static readonly Dictionary<GameObject, PoolableObject> objectDict = new();
 
         private static bool initialized = false;
 
@@ -35,19 +35,19 @@ namespace Milutools.Recycle
 
             initialized = true;
 
-            var go = new GameObject("[Object Pool]", typeof(RecycleGuard));
+            var go = new GameObject("[Object Pool]", typeof(PoolGuard));
             GameObject.DontDestroyOnLoad(go);
             go.SetActive(true);
             poolParent = go.transform;
         }
 
-        internal static void CreateSceneRecycleGuard()
+        internal static void CreateScenePoolGuard()
         {
             if (scenePoolParent)
             {
                 return;
             }
-            var guard = new GameObject("[Scene Object Pool]", typeof(SceneRecycleGuard));
+            var guard = new GameObject("[Scene Object Pool]", typeof(ScenePoolGuard));
             guard.SetActive(true);
             scenePoolParent = guard.transform;
         }
@@ -61,7 +61,7 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (!objectDict.ContainsKey(gameObject))
             {
-                DebugLog.LogWarning("The specific game object is not managed by the recycle pool.");
+                DebugLog.LogWarning("The specific game object is not managed by the object pool.");
                 GameObject.Destroy(gameObject);
                 return;
             }
@@ -83,14 +83,14 @@ namespace Milutools.Recycle
             {
                 foreach (var obj in existing.Objects)
                 {
-                    obj.RecyclingController.ReadyToDestroy = true;
+                    obj.PoolableController.ReadyToDestroy = true;
                     UnityEngine.Object.Destroy(obj.GameObject);
                 }
                 contexts.Remove(key);
                 
-                if (existing.LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad && SceneRecycleGuard.Instance)
+                if (existing.LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad && ScenePoolGuard.Instance)
                 {
-                    SceneRecycleGuard.PrefabInScene.Remove(key);
+                    ScenePoolGuard.PrefabInScene.Remove(key);
                 }
             }
             else
@@ -101,7 +101,7 @@ namespace Milutools.Recycle
         
         /// <summary>
         /// To ensure the prefab is registered.
-        /// You must first register it before requesting a recyclable object from the prefab.
+        /// You must first register it before requesting a poolable object from the prefab.
         /// </summary>
         /// <param name="id">an enum value to identify a specific prefab</param>
         /// <param name="prefab">the prefab object</param>
@@ -130,30 +130,30 @@ namespace Milutools.Recycle
 
             if (lifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad)
             {
-                if (!SceneRecycleGuard.Instance)
+                if (!ScenePoolGuard.Instance)
                 {
-                    CreateSceneRecycleGuard();
+                    CreateScenePoolGuard();
                 }
-                SceneRecycleGuard.PrefabInScene.Add(key);
+                ScenePoolGuard.PrefabInScene.Add(key);
             }
 
-            var recyclableObject = prefab.GetComponent<RecyclableObject>();
-            if (!recyclableObject)
+            var poolableObject = prefab.GetComponent<PoolableObject>();
+            if (!poolableObject)
             {
-                throw new InvalidOperationException($"Prefab '{key}' must have a RecyclableObject component. " +
+                throw new InvalidOperationException($"Prefab '{key}' must have a PoolableObject component. " +
                                                     $"Please add the component manually before registering.");
             }
 
-            recyclableObject.IsPrefab = true;
+            poolableObject.IsPrefab = true;
             
-            var context = new RecycleContext()
+            var context = new PoolContext()
             {
                 Prefab = prefab,
                 Name = $"{typeof(T).FullName}.{id}",
                 ID = id,
                 LifeCyclePolicy = lifeCyclePolicy,
                 MinimumObjectCount = minimumObjectCount,
-                ComponentTypes = recyclableObject.Components?.Where(x => x)
+                ComponentTypes = poolableObject.Components?.Where(x => x)
                                                 .Select(x => x.GetType()).ToArray() ?? Array.Empty<Type>()
             };
             
@@ -170,7 +170,7 @@ namespace Milutools.Recycle
         /// <param name="handler">an function to do something with the collection</param>
         /// <param name="parent">the parent of the retrieved object to be set</param>
         /// <returns></returns>
-        public static void Request<T>(T prefab, Action<RecycleCollection> handler, Transform parent = null) where T : Enum
+        public static void Request<T>(T prefab, Action<PooledEntity> handler, Transform parent = null) where T : Enum
         {
             var key = EnumIdentifier.Wrap(prefab);
             var collection = contexts[key].Request();
@@ -185,7 +185,7 @@ namespace Milutools.Recycle
         /// <param name="prefab">an enum value to identify a specific prefab</param>
         /// <param name="parent">the parent of the retrieved object to be set</param>
         /// <returns></returns>
-        public static RecycleCollection RequestWithCollection<T>(T prefab, Transform parent = null) where T : Enum
+        public static PooledEntity Request<T>(T prefab, Transform parent = null) where T : Enum
         {
             var key = EnumIdentifier.Wrap(prefab);
             var collection = contexts[key].Request();
@@ -199,9 +199,9 @@ namespace Milutools.Recycle
         /// <param name="prefab">an enum value to identify a specific prefab</param>
         /// <param name="parent">the parent of the retrieved object to be set</param>
         /// <returns></returns>
-        public static GameObject Request<T>(T prefab, Transform parent = null) where T : Enum
+        public static GameObject RequestGameObject<T>(T prefab, Transform parent = null) where T : Enum
         {
-            return RequestWithCollection(prefab, parent).GameObject;
+            return Request(prefab, parent).GameObject;
         }
 
         /// <summary>
@@ -212,9 +212,9 @@ namespace Milutools.Recycle
         /// <typeparam name="T">Component Type</typeparam>
         /// <typeparam name="E">Prefab ID Enum</typeparam>
         /// <returns></returns>
-        public static T Request<T, E>(E prefab, Transform parent = null) where T : Component where E : Enum
+        public static T RequestMainComponent<T, E>(E prefab, Transform parent = null) where T : Component where E : Enum
         {
-            return (T)RequestWithCollection(prefab, parent).MainComponent;
+            return (T)Request(prefab, parent).MainComponent;
         }
         
         /// <summary>
@@ -225,16 +225,16 @@ namespace Milutools.Recycle
         /// <typeparam name="T">Component Type</typeparam>
         /// <typeparam name="E">Prefab ID Enum</typeparam>
         /// <returns></returns>
-        public static T RequestWithComponent<T, E>(E prefab, Transform parent = null) where T : Component where E : Enum
+        public static T RequestComponent<T, E>(E prefab, Transform parent = null) where T : Component where E : Enum
         {
-            return RequestWithCollection(prefab, parent).GetComponent<T>();
+            return Request(prefab, parent).GetComponent<T>();
         }
 
         /// <summary>
         /// Immediately return all objects with the specified prefab ID to the pool.
         /// </summary>
         /// <param name="prefab">an enum value to identify a specific prefab</param>
-        public static void RecycleAllObjects<T>(T prefab) where T : Enum
+        public static void ReturnAllObjects<T>(T prefab) where T : Enum
         {
             var key = EnumIdentifier.Wrap(prefab);
             contexts[key].RecycleAllObjects();

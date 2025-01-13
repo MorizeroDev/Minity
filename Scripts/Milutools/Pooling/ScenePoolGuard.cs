@@ -5,12 +5,12 @@ using Milutools.Logger;
 using Milutools.Milutools.General;
 using UnityEngine;
 
-namespace Milutools.Recycle
+namespace Milutools.Pooling
 {
     [AddComponentMenu("")]
-    internal class SceneRecycleGuard : MonoBehaviour
+    internal class ScenePoolGuard : MonoBehaviour
     {
-        public static SceneRecycleGuard Instance { get; private set; }
+        public static ScenePoolGuard Instance { get; private set; }
         
         internal static readonly List<EnumIdentifier> PrefabInScene = new();
         internal readonly StringBuilder DestroyRecords = new();
@@ -24,7 +24,7 @@ namespace Milutools.Recycle
         {
             foreach (var prefab in PrefabInScene)
             {
-                RecyclePool.contexts[prefab].Clear();
+                ObjectPool.contexts[prefab].Clear();
             }
         }
 
@@ -32,7 +32,7 @@ namespace Milutools.Recycle
         {
             if (DestroyRecords.Length > 0)
             {
-                DebugLog.LogError("Several recyclable objects were unexpectedly destroyed, this will break the recycle pool!\n" +
+                DebugLog.LogError("Several poolable objects were unexpectedly destroyed, this will break the object pool!\n" +
                                DestroyRecords);
                 DestroyRecords.Clear();
             }

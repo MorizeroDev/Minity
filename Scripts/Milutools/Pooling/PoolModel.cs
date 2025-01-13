@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Milutools.Recycle
+namespace Milutools.Pooling
 {
     public enum PoolLifeCyclePolicy
     {
@@ -16,11 +16,11 @@ namespace Milutools.Recycle
         DestroyOnLoad
     }
 
-    public class RecycleCollection
+    public class PooledEntity
     {
         public GameObject GameObject { get; internal set; }
         public Transform Transform { get; internal set; }
-        public RecyclableObject RecyclingController { get; internal set; }
+        public PoolableObject PoolableController { get; internal set; }
         internal Component MainComponent { get; set; }
         internal Dictionary<Type, Component> Components { get; } = new();
 

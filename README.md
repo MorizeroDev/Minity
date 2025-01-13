@@ -33,23 +33,23 @@ Additionally, Milutools does not rely on the integer data of enum values. Even i
 
 ## **Object Pool**
 
-Milutools provides features like object pooling and automatic recycling. Object pools are commonly used in Unity development to reduce the overhead of frequent creation and destruction of game objects, thus improving performance. 
+Milutools provides features like object pooling and automatic returning. Object pools are commonly used in Unity development to reduce the overhead of frequent creation and destruction of game objects, thus improving performance. 
 
 
-Milutools will also batch recycle any excess objects created during peak usage based on the current usage situation.
+Milutools will also batch return any excess objects created during peak usage based on the current usage situation.
 
-First, you need to attach the `RecycableObject` component to the prefab of the object type you want to pool, and configure its parameters.  
+First, you need to attach the `PoolableObject` component to the prefab of the object type you want to pool, and configure its parameters.  
 
 For example, you can set the objects to automatically return to the pool after being active for a certain period, or wait for manual recycling.
 
-Next, use the following method to register a recyclable object prefab and define the lifecycle of the created objects:
+Next, use the following method to register a poolable object prefab and define the lifecycle of the created objects:
 ```csharp
-RecyclePool.EnsurePrefabRegistered(EnumValue, Prefab, BaseCount);
+ObjectPool.EnsurePrefabRegistered(EnumValue, Prefab, BaseCount);
 ```
 
 To retrieve an object managed by the object pool, use the following method:
 ```csharp
-RecyclePool.Request(EnumValue);
+ObjectPool.Request(EnumValue);
 ```
 
 ## **Scene Router**

@@ -5,17 +5,17 @@ using Milutools.Logger;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Milutools.Recycle
+namespace Milutools.Pooling
 {
-    public class RecycleContext
+    public class PoolContext
     {
         public GameObject Prefab { get; internal set; }
         public string Name { get; internal set; }
-        public IReadOnlyList<RecycleCollection> AllObjects => Objects;
+        public IReadOnlyList<PooledEntity> AllObjects => Objects;
         public PoolLifeCyclePolicy LifeCyclePolicy { get; internal set; }
         public uint MinimumObjectCount { get; internal set; }
         
-        internal List<RecycleCollection> Objects { get; } = new();
+        internal List<PooledEntity> Objects { get; } = new();
         
         internal Type[] ComponentTypes;
         internal object ID;
@@ -25,7 +25,7 @@ namespace Milutools.Recycle
         internal uint CurrentUsage = 0;
         internal uint IdleTick = 0;
         
-        private Stack<RecycleCollection> _objectPool { get; } = new();
+        private Stack<PooledEntity> _objectStack { get; } = new();
         
         public T GetID<T>() where T : Enum
         {
@@ -37,32 +37,32 @@ namespace Milutools.Recycle
         {
             return LifeCyclePolicy switch
             {
-                PoolLifeCyclePolicy.Eternity => RecyclePool.poolParent,
-                PoolLifeCyclePolicy.DestroyOnLoad => RecyclePool.scenePoolParent,
+                PoolLifeCyclePolicy.Eternity => ObjectPool.poolParent,
+                PoolLifeCyclePolicy.DestroyOnLoad => ObjectPool.scenePoolParent,
                 _ => null
             };
         }
         
-        private RecycleCollection Produce()
+        private PooledEntity Produce()
         {
             var gameObject = Object.Instantiate(Prefab, GetPoolParent());
             gameObject.name = $"[RE{gameObject.GetInstanceID()}] {Name}";
             gameObject.SetActive(false);
             
-            var recyclableComponent = gameObject.GetComponent<RecyclableObject>();
-            RecyclePool.objectDict.Add(gameObject, recyclableComponent);
+            var poolableObject = gameObject.GetComponent<PoolableObject>();
+            ObjectPool.objectDict.Add(gameObject, poolableObject);
             
             if (LifeCyclePolicy == PoolLifeCyclePolicy.Eternity)
             {
                 Object.DontDestroyOnLoad(gameObject);
             }
 
-            var collection = new RecycleCollection()
+            var collection = new PooledEntity()
             {
                 GameObject = gameObject,
                 Transform = gameObject.transform,
-                RecyclingController = recyclableComponent,
-                MainComponent = recyclableComponent.MainComponent
+                PoolableController = poolableObject,
+                MainComponent = poolableObject.MainComponent
             };
 
             for (var i = 0; i < ComponentTypes.Length; i++)
@@ -75,10 +75,10 @@ namespace Milutools.Recycle
                     continue;
                 }
 #endif
-                collection.Components.Add(ComponentTypes[i], recyclableComponent.Components[i]);
+                collection.Components.Add(ComponentTypes[i], poolableObject.Components[i]);
             }
 
-            recyclableComponent.Initialize(this, collection);
+            poolableObject.Initialize(this, collection);
             
             Objects.Add(collection);
             
@@ -89,11 +89,11 @@ namespace Milutools.Recycle
         {
             foreach (var obj in AllObjects)
             {
-                if (!obj.RecyclingController.Using)
+                if (!obj.PoolableController.Using)
                 {
                     continue;
                 }
-                obj.RecyclingController.ReturnToPool();
+                obj.PoolableController.ReturnToPool();
             }
         }
 
@@ -101,50 +101,50 @@ namespace Milutools.Recycle
         {
             for (var i = 0; i < count; i++)
             {
-                _objectPool.Push(Produce());
+                _objectStack.Push(Produce());
             }
         }
 
         internal void Clear()
         {
-            _objectPool.Clear();
+            _objectStack.Clear();
             Objects.Clear();
             CurrentUsage = 0;
         }
 
-        internal RecycleCollection Request()
+        internal PooledEntity Request()
         {
             if (LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad)
             {
-                if (!SceneRecycleGuard.Instance)
+                if (!ScenePoolGuard.Instance)
                 {
-                    RecyclePool.CreateSceneRecycleGuard();
+                    ObjectPool.CreateScenePoolGuard();
                 }
             }
             
-            if (!_objectPool.TryPop(out var collection))
+            if (!_objectStack.TryPop(out var collection))
             {
                 collection = Produce();
             }
             else
             {
-                collection.RecyclingController.OnReset?.Invoke();
+                collection.PoolableController.OnReset?.Invoke();
             }
 
             CurrentUsage++;
-            collection.RecyclingController.Using = true;
+            collection.PoolableController.Using = true;
             return collection;
         }
 
-        internal void ReturnToPool(RecycleCollection collection)
+        internal void ReturnToPool(PooledEntity collection)
         {
             CurrentUsage--;
             collection.Transform.SetParent(GetPoolParent());
             collection.GameObject.SetActive(false);
-            _objectPool.Push(collection);
+            _objectStack.Push(collection);
         }
 
         internal int GetObjectCount()
-            => _objectPool.Count;
+            => _objectStack.Count;
     }
 }

@@ -5,16 +5,16 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Milutools.Recycle.Editor
+namespace Milutools.Pooling.Editor
 {
-    [CustomEditor(typeof(RecycleGuard))]
-    public class RecycleGuardEditor : UnityEditor.Editor
+    [CustomEditor(typeof(PoolGuard))]
+    public class PoolGuardEditor : UnityEditor.Editor
     {
         private static Dictionary<PoolLifeCyclePolicy, bool> foldout = new();
-        private static Dictionary<PoolLifeCyclePolicy, RecycleContext> objFoldout = new();
+        private static Dictionary<PoolLifeCyclePolicy, PoolContext> objFoldout = new();
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Active prefab count: " + RecyclePool.contexts.Count);
+            EditorGUILayout.LabelField("Active prefab count: " + ObjectPool.contexts.Count);
             EditorGUILayout.Separator();
             
             foreach (PoolLifeCyclePolicy policy in Enum.GetValues(typeof(PoolLifeCyclePolicy)))
@@ -26,7 +26,7 @@ namespace Milutools.Recycle.Editor
                 }
 
                 var collection = 
-                    RecyclePool.contexts.Values.Where(x => x.LifeCyclePolicy == policy).ToArray();
+                    ObjectPool.contexts.Values.Where(x => x.LifeCyclePolicy == policy).ToArray();
                 
                 EditorGUI.indentLevel = 0;
                 foldout[policy] = EditorGUILayout.Foldout(foldout[policy], policy + " (" + collection.Length + ")", true);
@@ -45,7 +45,7 @@ namespace Milutools.Recycle.Editor
                         EditorGUILayout.LabelField("Base Amount", context.MinimumObjectCount.ToString());
                         EditorGUILayout.LabelField("Current Amount", context.Objects.Count.ToString());
                         EditorGUILayout.LabelField("Current Usage", context.CurrentUsage.ToString());
-                        EditorGUILayout.LabelField("Recent Usage", (context.PeriodUsage / RecycleGuard.usageTrackCount).ToString());
+                        EditorGUILayout.LabelField("Recent Usage", (context.PeriodUsage / PoolGuard.usageTrackCount).ToString());
                         if (objFoldout[policy] != context)
                         {
                             objFoldout[policy] = context;

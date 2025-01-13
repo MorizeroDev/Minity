@@ -6,22 +6,23 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-namespace Milutools.Recycle
+namespace Milutools.Pooling
 {
     [DisallowMultipleComponent]
-    public sealed class RecyclableObject : MonoBehaviour
+    public sealed class PoolableObject : MonoBehaviour
     {
+        [FormerlySerializedAs("AutoRecycleTimeOut")]
         [FormerlySerializedAs("RecycleTimeOut")]
         [Tooltip("Automatically return the object to the pool after specific seconds.\n* -1 means disabling auto recycling.")]
-        public float AutoRecycleTimeOut = -1f;
+        public float AutoReturnTimeOut = -1f;
         
         [FormerlySerializedAs("LinkComponent")] 
-        [Tooltip("Link a main component, then you can access it using RecyclePool.Request<T, E> function.\n" +
+        [Tooltip("Link a main component, then you can access it using ObjectPool.Request<T, E> function.\n" +
                  "This would avoid using GetComponent function frequently as GetComponent function may made the program slow.")]
         public Component MainComponent;
         
         [FormerlySerializedAs("DictComponent")] 
-        [Tooltip("Link more components, then you can access it using RecycleCollection.GetComponent function.\n" +
+        [Tooltip("Link more components, then you can access it using PoolableEntity.GetComponent function.\n" +
                  "This would avoid using GetComponent function frequently as GetComponent function may made the program slow.\n" +
                  "NOTICE: involving multiple components with a same type is not supported.")]
         public Component[] Components;
@@ -32,23 +33,23 @@ namespace Milutools.Recycle
         internal bool IsPrefab { get; set; } = false;
         internal bool ReadyToDestroy = false;
         
-        private RecycleCollection _recycleCollection;
-        private RecycleContext _parentContext;
+        private PooledEntity _pooledEntity;
+        private PoolContext _parentContext;
         private int _objectHash;
         
-        private float recycleTick = 0f;
+        private float returnTick = 0f;
         
 #if UNITY_EDITOR
         private bool warned = false;
 #endif
         
-        internal void Initialize(RecycleContext context, RecycleCollection collection)
+        internal void Initialize(PoolContext context, PooledEntity collection)
         {
             _parentContext = context;
-            _recycleCollection = collection;
+            _pooledEntity = collection;
             _objectHash = GetHashCode();
             
-            DebugLog.Log($"RecyclableObject created: Hash={_objectHash}, Name={gameObject.name}, PrefabName={context.Name}");
+            DebugLog.Log($"PoolableObject created: Hash={_objectHash}, Name={gameObject.name}, PrefabName={context.Name}");
         }
         
         private void OnDestroy()
@@ -57,7 +58,7 @@ namespace Milutools.Recycle
             if (IsPrefab)
             {
                 throw new Exception(
-                    "The prefab object is unexpectedly destroyed, the recycle pool would fail when producing new objects!");
+                    "The prefab object is unexpectedly destroyed, the object pool would fail when producing new objects!");
             }
             
             if (_parentContext == null)
@@ -69,11 +70,11 @@ namespace Milutools.Recycle
             {
                 if (_parentContext.LifeCyclePolicy == PoolLifeCyclePolicy.Eternity)
                 {
-                    throw new Exception($"RecyclableObject is unexpectedly destroyed, this has broken the recycle pool: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                    throw new Exception($"PoolableObject is unexpectedly destroyed, this has broken the object pool: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
                 }
                 else
                 {
-                    SceneRecycleGuard.Instance.DestroyRecords.AppendLine($"Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+                    ScenePoolGuard.Instance.DestroyRecords.AppendLine($"Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
                 }
             }
             else
@@ -84,9 +85,9 @@ namespace Milutools.Recycle
                 }
             }
 
-            RecyclePool.objectDict.Remove(gameObject);
+            ObjectPool.objectDict.Remove(gameObject);
             
-            DebugLog.Log($"RecyclableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
+            DebugLog.Log($"PoolableObject destroyed: Hash={_objectHash}, Name={gameObject.name}, PrefabName={_parentContext.Name}");
 #endif
         }
 
@@ -112,19 +113,19 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (IsPrefab)
             {
-                DebugLog.LogError("You are trying to recycle a prefab, this is not allowed.");
+                DebugLog.LogError("You are trying to return a prefab to the pool, this is not allowed.");
                 return;
             }
             if (_parentContext == null)
             {
                 Destroy(gameObject);
-                DebugLog.LogWarning("You are trying to recycle an object that is not managed by the recycle pool, this is not allowed.");
+                DebugLog.LogWarning("You are trying to return an object that is not managed by the object pool, this is not allowed.");
                 return;
             }
 #endif
             Using = false;
-            _recycleCollection.Transform.SetParent(null);
-            _parentContext.ReturnToPool(_recycleCollection);
+            _pooledEntity.Transform.SetParent(null);
+            _parentContext.ReturnToPool(_pooledEntity);
         }
         
         private void FixedUpdate()
@@ -132,28 +133,28 @@ namespace Milutools.Recycle
 #if UNITY_EDITOR
             if (IsPrefab)
             {
-                DebugLog.LogWarning("The prefab for the recycle pool must be inactive.");
+                DebugLog.LogWarning("The prefab for the object pool must be inactive.");
                 return;
             }
             
             if (_parentContext == null && !warned)
             {
                 warned = true;
-                DebugLog.LogWarning("This object is not managed by the recycle pool, please use 'RecyclePool.Request' function to create the object.");
+                DebugLog.LogWarning("This object is not managed by the object pool, please use 'ObjectPool.Request' function to create the object.");
                 return;
             }
 #endif
             
-            if (AutoRecycleTimeOut <= 0f)
+            if (AutoReturnTimeOut <= 0f)
             {
                 return;
             }
             
-            recycleTick += Time.fixedDeltaTime;
-            if (recycleTick >= AutoRecycleTimeOut)
+            returnTick += Time.fixedDeltaTime;
+            if (returnTick >= AutoReturnTimeOut)
             {
                 ReturnToPool();
-                recycleTick = 0f;
+                returnTick = 0f;
             }
         }
     }
