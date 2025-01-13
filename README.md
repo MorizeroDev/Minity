@@ -1,14 +1,13 @@
-# Milutools
+# Minity
 
-**Mil**thm **u**nity **tools**, a collection of commonly used Unity features, such as object pool, scene router, sound player, and more.
-
+**Mi**lthm u**nity** framework, a Unity extension framework that includes features such as object pooling, scene routing, UI manager, and behavior trees.
 ## Setup
 
 Unity Editor -> Package Manger -> Add package from git URL...
 
 ```
-# Milutools Core
-https://github.com/MorizeroDev/Milutools.git
+# Minity Core
+https://github.com/MorizeroDev/Minity.git
 
 # Milease Core
 https://github.com/MorizeroDev/Milease.git
@@ -20,7 +19,7 @@ https://github.com/ParaParty/ParaPartyUtil.git?path=Colors
 Or including these in `manifest.json`:
 
 ```
-"com.morizero.milutools": "https://github.com/MorizeroDev/Milutools.git",
+"dev.milthm.minity": "https://github.com/MorizeroDev/Minity.git",
 "com.morizero.milease": "https://github.com/MorizeroDev/Milease.git",
 "party.para.util.colors": "https://github.com/ParaParty/ParaPartyUtil.git?path=Colors",
 ```
