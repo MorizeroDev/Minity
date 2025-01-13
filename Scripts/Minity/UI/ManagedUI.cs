@@ -132,6 +132,14 @@ namespace Minity.UI
             UIManager.Get(typeof(ManagedUIReturnValueOnly<T, R>))
                      .Open(callback);
         }
+
+        public static Task<R> OpenAsync()
+        {
+            var tcs = new TaskCompletionSource<R>();
+            UIManager.Get(typeof(ManagedUIReturnValueOnly<T, R>))
+                     .Open((R ret) => tcs.TrySetResult(ret));
+            return tcs.Task;
+        }
         
         internal override void Open(object parameter)
         {
@@ -160,6 +168,15 @@ namespace Minity.UI
                 .Open(callback);
         }
         
+        public static Task OpenAsync(P parameter)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            UIManager.Get(typeof(ManagedUI<T, P>))
+                     .SetParameter(parameter)
+                     .Open(() => tcs.TrySetResult(true));
+            return tcs.Task;
+        }
+        
         internal override void Open(object parameter)
         {
             AboutToOpen((P)parameter);
@@ -185,6 +202,15 @@ namespace Minity.UI
             UIManager.Get(typeof(ManagedUI<T, P, R>))
                 .SetParameter(parameter)
                 .Open(callback);
+        }
+        
+        public static Task<R> OpenAsync(P parameter)
+        {
+            var tcs = new TaskCompletionSource<R>();
+            UIManager.Get(typeof(ManagedUI<T, P, R>))
+                .SetParameter(parameter)
+                .Open((R ret) => tcs.TrySetResult(ret));
+            return tcs.Task;
         }
         
         internal override void Open(object parameter)
