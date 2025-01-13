@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Minity.Logger;
-using Minity.Milutools.General;
+using Minity.General;
 using UnityEngine;
 
 namespace Minity.Audio

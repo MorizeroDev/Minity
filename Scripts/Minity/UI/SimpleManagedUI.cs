@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Minity.Milutools.UI
+namespace Minity.UI
 {
     public class SimpleManagedUI : ManagedUI
     {

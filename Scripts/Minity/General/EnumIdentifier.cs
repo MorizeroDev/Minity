@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Minity.Milutools.General
+namespace Minity.General
 {
     public struct EnumIdentifier
     {

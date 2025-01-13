@@ -1,10 +1,10 @@
 ﻿using System;
 using Minity.Logger;
-using Minity.Milutools.General;
+using Minity.General;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Minity.Milutools.UI
+namespace Minity.UI
 {
     public enum UIMode
     {

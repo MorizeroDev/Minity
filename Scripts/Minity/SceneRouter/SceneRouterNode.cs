@@ -1,5 +1,5 @@
 ﻿using System;
-using Minity.Milutools.General;
+using Minity.General;
 using UnityEngine;
 
 namespace Minity.SceneRouter

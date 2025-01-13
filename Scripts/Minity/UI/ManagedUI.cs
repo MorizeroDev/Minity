@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Milease.Core;
 using Milease.Core.Animator;
 using Milease.Enums;
@@ -7,7 +10,7 @@ using Minity.Logger;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Minity.Milutools.UI
+namespace Minity.UI
 {
     [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasGroup))]

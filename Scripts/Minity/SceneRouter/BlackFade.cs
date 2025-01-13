@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Milease.Core;
+using Milease.Core.Animator;
+using Milease.DSL;
 using Milease.Utils;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +16,9 @@ namespace Minity.SceneRouter
         
         public override void AboutToLoad()
         {
-            Panel.Milease(UMN.Color, Color.clear, Color.black, 0.5f)
+            MilInstantAnimator.Start(
+                    0.5f / Panel.MQuad(x => x.color, Color.clear, Color.black)
+                )
                 .Then(
                     new Action(ReadyToLoad).AsMileaseKeyEvent()
                 )
@@ -24,7 +28,9 @@ namespace Minity.SceneRouter
 
         public override void OnLoaded()
         {
-            Panel.Milease(UMN.Color, Color.black, Color.clear, 0.5f)
+            MilInstantAnimator.Start(
+                    0.5f / Panel.MQuad(x => x.color, Color.black, Color.clear)
+                )
                 .Then(
                     new Action(FinishLoading).AsMileaseKeyEvent()
                 )

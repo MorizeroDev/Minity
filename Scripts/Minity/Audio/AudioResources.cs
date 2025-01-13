@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Minity.Logger;
-using Minity.Milutools.General;
+using Minity.General;
 using UnityEngine;
 
 namespace Minity.Audio

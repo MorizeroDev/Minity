@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Minity.Logger;
-using Minity.Milutools.General;
+using Minity.General;
 
-namespace Minity.Milutools.UI
+namespace Minity.UI
 {
     public static class UIManager
     {

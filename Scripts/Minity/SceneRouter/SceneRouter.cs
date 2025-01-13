@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Minity.Logger;
-using Minity.Milutools.General;
+using Minity.General;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

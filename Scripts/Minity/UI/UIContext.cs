@@ -1,7 +1,7 @@
 ﻿using System;
 using Minity.Logger;
 
-namespace Minity.Milutools.UI
+namespace Minity.UI
 {
     public class UIContext
     {
