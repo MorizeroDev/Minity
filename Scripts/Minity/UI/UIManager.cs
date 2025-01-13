@@ -24,7 +24,11 @@ namespace Minity.Milutools.UI
             
             foreach (var u in ui)
             {
-                UIDict.Add(u.Identifier, u);
+                if (!(u.Identifier.Type == typeof(BuiltinUI) && u.Identifier.Value == (int)BuiltinUI.AnonymousUI))
+                {
+                    UIDict.Add(u.Identifier, u);
+                }
+                
                 if (u.TypeDefinition == typeof(SimpleManagedUI))
                 {
                     continue;

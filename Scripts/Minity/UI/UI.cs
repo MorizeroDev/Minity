@@ -1,4 +1,5 @@
 ﻿using System;
+using Minity.Logger;
 using Minity.Milutools.General;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -8,6 +9,11 @@ namespace Minity.Milutools.UI
     public enum UIMode
     {
         Default, Singleton
+    }
+
+    public enum BuiltinUI
+    {
+        AnonymousUI
     }
     
     public class UI
@@ -41,6 +47,12 @@ namespace Minity.Milutools.UI
             return Object.Instantiate(Prefab);
         }
 
+        public static UI FromResources(string prefabPath)
+            => FromPrefab(BuiltinUI.AnonymousUI, Resources.Load<GameObject>(prefabPath));
+        
+        public static UI FromPrefab<T>(GameObject prefab)
+            => FromPrefab(BuiltinUI.AnonymousUI, prefab);
+        
         public static UI FromResources<T>(T identifier, string prefabPath) where T : Enum
             => FromPrefab(identifier, Resources.Load<GameObject>(prefabPath));
         
@@ -48,9 +60,9 @@ namespace Minity.Milutools.UI
         {
             if (!prefab.TryGetComponent<ManagedUI>(out var ui))
             {
-                throw new Exception($"UI '{identifier}' must have a ManagedUI component.");
+                throw new Exception($"UI '{identifier}'({prefab.name}) must have a ManagedUI component.");
             }
-
+            
             var type = ui.GetType();
             while (type != null && type.BaseType != null)
             {
@@ -59,6 +71,11 @@ namespace Minity.Milutools.UI
                     break;
                 }
                 type = type.BaseType;
+            }
+            
+            if (identifier is BuiltinUI and BuiltinUI.AnonymousUI && type == typeof(SimpleManagedUI))
+            {
+                throw new Exception($"SimpleManagedUI '{identifier}'({prefab.name}) must have an identifier.");
             }
             
             var data = new UI()
