@@ -3,7 +3,8 @@
     "rootNamespace": "Minity",
     "references": [
         "GUID:6055c4ca3d336984698eda24b99f7071",
-        "GUID:5baad4e8b0c589044b804563fec3b23b"
+        "GUID:5baad4e8b0c589044b804563fec3b23b",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
