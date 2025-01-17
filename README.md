@@ -1,7 +1,8 @@
 # Minity
 
 **Mi**lthm u**nity** framework, a Unity extension framework that includes features such as object pooling, scene routing, UI manager, and behavior trees.
-## Setup
+
+## **Setup**
 
 Unity Editor -> Package Manger -> Add package from git URL...
 
@@ -102,7 +103,7 @@ You can retrieve the data in another scene like this:
 SceneRouter.FetchParameters<Data>();
 ```
 
-# UI Manager
+## **UI Manager**
 
 Quickly build easy-to-use, managed UIs by implementing abstract classes `ManagedUIReturnValueOnly<T, R>`, `ManagedUI<T, P>`, and `ManagedUI<T, P, R>`.
 
@@ -159,6 +160,69 @@ InputBox.Open("Please enter your name", (name) => Debug.Log($"The player name is
 
 var playerName = await InputBox.OpenAsync("Please enter your name");
 ```
+
+## **Binding View**
+
+The **Binding View** provides the functionality to bind `TextMeshPro` text components to data. For example, you can create a class `DemoBindingView` that inherits from the abstract class `BindingView`.
+
+We use `Binding<T>` to declare data with binding functionality.
+
+```c#
+public class DemoBindingView : BindingView
+{
+    // Specify Format Culture
+    protected override CultureInfo Formatter { get; } = CultureInfo.CurrentCulture;
+
+    private Binding<DateTime> time;
+    private Binding<string> userName;
+    private Binding<float> score;
+    
+    // Custom Data Formatter
+    private Binding<DateTime> date = new((v) => v.ToShortDateString());
+
+    protected override void Initialize()
+    {
+        score.Value = 100.23333f;
+        userName.Value = "Buger404";
+        time.Value = DateTime.Now;
+        date.Value = DateTime.Now;
+    }
+
+    public void MakeSomeChanges()
+    {
+        score.Value = Random.Range(0f, 100f);
+        time.Value = DateTime.Now;
+        date.Value = DateTime.Now;
+        
+        // Apply operations to all text components bound to the score data
+        score.Do((t) => t.color = Color.red);
+    }
+}
+```
+
+Next, attach this component to your Canvas, and you can freely use the declared data within that Canvas. Whenever the data changes, the text will automatically update.
+
+> **Note:** If a text component is bound to multiple data fields, modifying multiple data fields simultaneously will not cause multiple updates. Instead, changes are batched and processed at the end of the frame. Similarly, making multiple modifications to the same data field within a frame will not cause redundant updates. (In other words, while updates have a slight delay, there are no visual issues.)
+
+You can set your text content to something like:
+
+```
+Hello, I am {{ userName }}, the current time is {{ time:HH:mm:ss }}, and my current score is: {{ score:F2 }}
+```
+
+After initialization, the text will dynamically update to:
+
+```
+Hello, I am Buger404, the current time is 11:45:14, and my current score is: 100.233
+```
+
+The format for binding data is: `{{ FieldName:FormatString }}`, where the format string is optional. For instance, `{{ time:HH:mm:ss }}` is equivalent to:
+
+```c#
+yourTextComponent.text = time.ToString("HH:mm:ss");
+```
+
+Additionally, you do not need to manually instantiate empty `Binding<T>` instances. They will be automatically managed by Minity.
 
 ## **Custom Loading Animations**
 
