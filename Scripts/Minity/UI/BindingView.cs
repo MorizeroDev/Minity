@@ -122,13 +122,19 @@ namespace Minity.UI
         public void CreateLink(TMP_Text component)
         {
             var text = component.text;
+            var matches = regex.Matches(text);
+
+            if (matches.Count == 0)
+            {
+                return;
+            }
+            
             var link = new Link()
             {
                 Component = component,
                 Formatter = Formatter
             };
             var lastIndex = 0;
-            var matches = regex.Matches(text);
             
             foreach (Match match in matches)
             {
