@@ -30,17 +30,22 @@ namespace Minity.UI
             public CultureInfo Formatter;
             public List<TextSegment> Segments = new();
 
-            public void UpdateText(BindingBase sender)
+            internal void ScheduleUpdateText(BindingBase sender)
             {
                 if (!Component)
                 {
                     if (sender != null)
                     {
                         sender.Components.Remove(Component);
-                        sender.OnValueChanged -= UpdateText;
+                        sender.OnValueChanged -= ScheduleUpdateText;
                     }
                     return;
                 }
+                BindingViewGuard.ScheduleUpdate(UpdateText);
+            }
+            
+            internal void UpdateText()
+            {
                 var sb = new StringBuilder();
                 foreach (var segment in Segments)
                 {
@@ -66,7 +71,7 @@ namespace Minity.UI
             }
         }
         
-        private Dictionary<string, BindingBase> bindings = new();
+        private readonly Dictionary<string, BindingBase> bindings = new();
 
         private BindingBase GetBinding(string path)
         {
@@ -171,7 +176,7 @@ namespace Minity.UI
                             Formatter = formatter,
                             IsDynamicText = true
                         });
-                        binding.OnValueChanged += link.UpdateText;
+                        binding.OnValueChanged += link.ScheduleUpdateText;
                         binding.Components.Add(component);
                     }
                     
@@ -187,7 +192,7 @@ namespace Minity.UI
                 });
             }
             
-            link.UpdateText(null);
+            link.ScheduleUpdateText(null);
         }
         
         public void Awake()
