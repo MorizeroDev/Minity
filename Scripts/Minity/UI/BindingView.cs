@@ -72,6 +72,7 @@ namespace Minity.UI
         }
         
         private readonly Dictionary<string, BindingBase> bindings = new();
+        private bool initialized = false;
 
         private BindingBase GetBinding(string path)
         {
@@ -197,6 +198,16 @@ namespace Minity.UI
         
         public void Awake()
         {
+            EnsureInitialized();
+        }
+
+        public void EnsureInitialized()
+        {
+            if (initialized)
+            {
+                return;
+            }
+            
             var components = GetComponentsInChildren<TMP_Text>(true);
             foreach (var component in components)
             {
@@ -204,6 +215,7 @@ namespace Minity.UI
             }
 
             Initialize();
+            initialized = true;
         }
 
         protected virtual void Initialize()
