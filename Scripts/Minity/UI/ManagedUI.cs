@@ -16,6 +16,8 @@ namespace Minity.UI
     [RequireComponent(typeof(CanvasGroup))]
     public abstract class ManagedUI : MonoBehaviour
     {
+        internal abstract string EditorName { get; }
+        
         internal UI Source;
         internal Action CloseInternalCallback;
         internal object Callback;
@@ -127,6 +129,7 @@ namespace Minity.UI
     
     public abstract class ManagedUIReturnValueOnly<T, R> : ManagedUI
     {
+        internal override string EditorName => $"{typeof(R).Name} {typeof(T).Name}();";
         public static void Open(Action<R> callback = null)
         {
             UIManager.Get(typeof(ManagedUIReturnValueOnly<T, R>))
@@ -161,6 +164,7 @@ namespace Minity.UI
     
     public abstract class ManagedUI<T, P> : ManagedUI
     {
+        internal override string EditorName => $"void {typeof(T).Name}({typeof(P).Name} parameter);";
         public static void Open(P parameter, Action callback = null)
         {
             UIManager.Get(typeof(ManagedUI<T, P>))
@@ -197,6 +201,7 @@ namespace Minity.UI
     
     public abstract class ManagedUI<T, P, R> : ManagedUI
     {
+        internal override string EditorName => $"{typeof(R).Name} {typeof(T).Name}({typeof(P).Name} parameter);";
         public static void Open(P parameter, Action<R> callback = null)
         {
             UIManager.Get(typeof(ManagedUI<T, P, R>))

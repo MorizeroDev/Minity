@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Minity.Logger;
 using Minity.General;
 using UnityEngine;
@@ -47,6 +49,21 @@ namespace Minity.UI
             return Object.Instantiate(Prefab);
         }
 
+        public static IEnumerable<UI> FromUIList(string uiListPath)
+        {
+            var list = Resources.Load<UIList>(uiListPath);
+            return list.List.Select(x =>
+            {
+                if (!x.UI)
+                {
+                    return null;
+                }
+                var ui = FromPrefab(BuiltinUI.AnonymousUI, x.UI.gameObject);
+                ui.Mode = x.Mode;
+                return ui;
+            });
+        }
+        
         public static UI FromResources(string prefabPath)
             => FromPrefab(BuiltinUI.AnonymousUI, Resources.Load<GameObject>(prefabPath));
         

@@ -4,6 +4,8 @@ namespace Minity.UI
 {
     public class SimpleManagedUI : ManagedUI
     {
+        internal override string EditorName => $"void {name}();";
+
         protected override void Begin()
         {
             

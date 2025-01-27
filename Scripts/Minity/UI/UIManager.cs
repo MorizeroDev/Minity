@@ -24,6 +24,11 @@ namespace Minity.UI
             
             foreach (var u in ui)
             {
+                if (u == null)
+                {
+                    continue;
+                }
+                
                 if (!(u.Identifier.Type == typeof(BuiltinUI) && u.Identifier.Value == (int)BuiltinUI.AnonymousUI))
                 {
                     UIDict.Add(u.Identifier, u);
