@@ -1,0 +1,47 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ output extension=".ignore" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+
+<#
+    var types = new Dictionary<string, string[]>()
+    {
+        ["Primitive"] = [ "int", "bool", "float", "string", "double" ],
+        ["General"] = [ "GameObject", "Component", "Transform", "RectTransform" ],
+        ["Graphics"] = [ "Sprite", "Texture2D", "Texture", "Material", "Mesh" ],
+        ["Physics"] = [ "Collider", "Collider2D", "Rigidbody", "Rigidbody2D" ],
+        ["Struct"] = [ "Color", "Vector2", "Vector3", "Rect" ],
+    };
+    
+    var outputDir = Path.GetDirectoryName(Host.TemplateFile);
+
+    foreach (var pair in types)
+    {
+        foreach (var type in pair.Value)
+        {
+            var name = type;
+            if (char.IsLower(name[0]))
+            {
+                name = char.ToUpper(name[0]) + name.Substring(1);
+            }
+            var path = Path.Combine(outputDir, pair.Key);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var code = $@"using System;
+using UnityEngine;
+
+namespace Minity.Variable
+{{
+    [CreateAssetMenu(fileName = ""{name}"", menuName = ""Minity/Variable/{pair.Key}/{name}Var"")]
+    public class {name}Var : MinityVariable<{type}> {{}}
+}}
+";
+            File.WriteAllText(Path.Combine(path, $"{name}Var.cs"), code);
+        }
+    }
+#>
