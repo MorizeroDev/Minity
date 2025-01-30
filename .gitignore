@@ -464,3 +464,7 @@ Textures.meta
 Resources/UIList.asset
 
 Resources/UIList.asset.meta
+
+ProjectSettings/
+
+ProjectSettings.meta

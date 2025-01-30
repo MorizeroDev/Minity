@@ -29,14 +29,14 @@ Or including these in `manifest.json`:
 
 Using enum values as identifiers for various resources enhances the maintainability of your project. For instance, when you're working with scene routing or object pooling, you can associate enum values with specific resources during the initialization phase, and later reference these resources by using the enum values.  
 
-Additionally, Milutools does not rely on the integer data of enum values. Even if you have two enums with identical integer values, Milutools can still differentiate between them.
+Additionally, Minity does not rely on the integer data of enum values. Even if you have two enums with identical integer values, Minity can still differentiate between them.
 
 ## **Object Pool**
 
-Milutools provides features like object pooling and automatic returning. Object pools are commonly used in Unity development to reduce the overhead of frequent creation and destruction of game objects, thus improving performance. 
+Minity provides features like object pooling and automatic returning. Object pools are commonly used in Unity development to reduce the overhead of frequent creation and destruction of game objects, thus improving performance. 
 
 
-Milutools will also batch return any excess objects created during peak usage based on the current usage situation.
+Minity will also batch return any excess objects created during peak usage based on the current usage situation.
 
 First, you need to attach the `PoolableObject` component to the prefab of the object type you want to pool, and configure its parameters.  
 
