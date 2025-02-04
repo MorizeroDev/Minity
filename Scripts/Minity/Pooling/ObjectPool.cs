@@ -88,7 +88,7 @@ namespace Minity.Pooling
                 }
                 contexts.Remove(key);
                 
-                if (existing.LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad && ScenePoolGuard.Instance)
+                if (existing.LifeCyclePolicy == PoolLifeCyclePolicy.DestroyOnLoad)
                 {
                     ScenePoolGuard.PrefabInScene.Remove(key);
                 }
