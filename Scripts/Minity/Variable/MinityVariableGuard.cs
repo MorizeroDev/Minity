@@ -21,6 +21,7 @@ namespace Minity.Variable
             var go = new GameObject("[Minity Variable Guard]", typeof(MinityVariableGuard));
             go.SetActive(true);
             Instance = go.GetComponent<MinityVariableGuard>();
+            DontDestroyOnLoad(go);
         }
 
         private void FixedUpdate()
