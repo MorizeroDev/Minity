@@ -46,6 +46,8 @@ namespace Minity.XLuaTools
         
         private void Awake()
         {
+            _ = LuaEnvGuard.Instance;
+            
             ScriptScopeTable = LuaEnvGuard.Environment.NewTable();
             
             using var meta = LuaEnvGuard.Environment.NewTable();
