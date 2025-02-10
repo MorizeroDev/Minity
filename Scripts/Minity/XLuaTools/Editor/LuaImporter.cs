@@ -19,7 +19,8 @@ namespace Minity.XLuaTools.Editor
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
-            var asset = LuaAsset.Create(File.ReadAllText(ctx.assetPath));
+            var id = AssetDatabase.AssetPathToGUID(ctx.assetPath);
+            var asset = LuaAsset.Create(File.ReadAllText(ctx.assetPath), id);
             ctx.AddObjectToAsset("LuaCode", asset, LoadIconTexture());
             ctx.SetMainObject(asset);
         }

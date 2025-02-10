@@ -70,7 +70,7 @@ namespace Minity.XLuaTools
             }
             
             LuaEnvGuard.Environment.DoString(Code.Code, Code.name, ScriptScopeTable);
-            Code.Validated = false;
+            Code.ReloadEvent += Reload;
 
             var events = new List<ILuaEventSupport>();
             foreach (var flag in Enum.GetValues(typeof(EventCullFlag)))
@@ -92,17 +92,12 @@ namespace Minity.XLuaTools
 
         private void OnDestroy()
         {
+            Code.ReloadEvent -= Reload;
             ScriptScopeTable.Dispose();
         }
-
-#if UNITY_EDITOR
-        private void Update()
+        
+        private void Reload()
         {
-            if (!Code.Validated)
-            {
-                return;
-            }
-
             Debug.Log($"Code '{Code.name}' has been updated and reloaded.");
             
             LuaEnvGuard.Environment.DoString(Code.Code, Code.name, ScriptScopeTable);
@@ -110,10 +105,7 @@ namespace Minity.XLuaTools
             {
                 ev.Reload(ScriptScopeTable);
             }
-            
-            Code.Validated = false;
         }
-#endif
     }
 }
 #endif
