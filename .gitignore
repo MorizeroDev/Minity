@@ -475,3 +475,11 @@ XLua.meta
 AddressableAssetsData/
 
 AddressableAssetsData.meta
+
+Plugins/
+
+Plugins.meta
+
+StreamingAssets/
+
+StreamingAssets.meta
