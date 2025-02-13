@@ -22,7 +22,7 @@ namespace Minity.SceneRouter
                 .Then(
                     new Action(ReadyToLoad).AsMileaseKeyEvent()
                 )
-                .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState)
+                .UsingResetMode(AnimationResetMode.ResetToInitialState)
                 .PlayImmediately();
         }
 
@@ -34,7 +34,7 @@ namespace Minity.SceneRouter
                 .Then(
                     new Action(FinishLoading).AsMileaseKeyEvent()
                 )
-                .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState)
+                .UsingResetMode(AnimationResetMode.ResetToInitialState)
                 .PlayImmediately();
         }
     }

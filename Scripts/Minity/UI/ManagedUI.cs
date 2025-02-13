@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Milease.Core;
 using Milease.Core.Animator;
+using Milease.DSL;
 using Milease.Enums;
 using Milease.Utils;
 using Minity.Logger;
@@ -51,12 +52,12 @@ namespace Minity.UI
             Begin();
             
             fadeInAnimator ??= 
-                group.Milease(nameof(group.alpha), 0f, 1f, 0.25f, 0f, EaseFunction.Quad, EaseType.Out)
-                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
+                (0.25f / group.MQuadOut(x => x.alpha, 0f, 1f))
+                    .UsingResetMode(AnimationResetMode.ResetToInitialState);
             
             fadeOutAnimator ??= 
-                group.Milease(nameof(group.alpha), 1f, 0f, 0.25f)
-                    .UsingResetMode(RuntimeAnimationPart.AnimationResetMode.ResetToInitialState);
+                (0.25f / group.MQuad(x => x.alpha, 1f, 0f))
+                    .UsingResetMode(AnimationResetMode.ResetToInitialState);
         }
 
         private void OnEnable()

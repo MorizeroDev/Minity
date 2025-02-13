@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Milease.Core.Animator;
+using Milease.DSL;
 using Milease.Enums;
 using Milease.Utils;
 using UnityEngine;
@@ -75,14 +76,13 @@ namespace Minity.Audio
                     player.AudioSource.clip = clip;
                     player.AudioSource.Play();
                     player.AudioSource.time = startPosition;
-                    player.AudioSource.Milease("volume", 0f, player.Volume, 1f, 
-                        0f, EaseFunction.Quad, EaseType.Out)
+                    player.AudioSource.MQuadOut(x => x.volume, 1f / 0f.To(player.Volume))
                         .PlayImmediately();
                 }
                 else
                 {
                     player.TargetClip = clip;
-                    player.AudioSource.MileaseTo("volume", 0f, 1f, 0f, EaseFunction.Quad, EaseType.Out)
+                    player.AudioSource.MQuadOut(x => x.volume, 1f / 0f.ToThis())
                         .Then(new Action(() =>
                         {
                             player.AudioSource.clip = player.TargetClip;
@@ -90,8 +90,7 @@ namespace Minity.Audio
                             player.AudioSource.time = startPosition;
                         }).AsMileaseKeyEvent())
                         .Then(
-                            player.AudioSource.Milease("volume", 0f, player.Volume, 1f, 
-                                    0f, EaseFunction.Quad, EaseType.Out)
+                            player.AudioSource.MQuadOut(x => x.volume, 1f / 0f.To(player.Volume))
                         ).PlayImmediately();
                 }
             }
