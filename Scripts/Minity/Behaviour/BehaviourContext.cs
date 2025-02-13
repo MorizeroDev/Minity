@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Minity.AI
+namespace Minity.Behaviour
 {
     public abstract class BehaviourContext : MonoBehaviour
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Minity.AI.Nodes
+namespace Minity.Behaviour.Nodes
 {
     public class WaitNode : IBehaviourNode
     {

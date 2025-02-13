@@ -1,15 +1,12 @@
-﻿using System;
-
-namespace Minity.AI.Nodes
+﻿namespace Minity.Behaviour.Nodes
 {
-    public class ConditionNode<T> : IBehaviourNode where T : BehaviourContext
+    public class InverterNode : IBehaviourNode
     {
-        internal Predicate<T> Handler;
         internal IBehaviourNode Node;
         IBehaviourNode IBehaviourNode.Previous { get; set; }
         BehaviourState IBehaviourNode.State { get; set; }
-
-        internal ConditionNode(IBehaviourNode node)
+        
+        internal InverterNode(IBehaviourNode node)
         {
             Node = node;
             if (node != null)
@@ -17,25 +14,30 @@ namespace Minity.AI.Nodes
                 node.Previous = this;
             }
         }
+
+        BehaviourState InvertState(BehaviourState state)
+        {
+            return state switch
+            {
+                BehaviourState.Failed => BehaviourState.Succeed,
+                BehaviourState.Succeed => BehaviourState.Failed,
+                _ => state
+            };
+        }
         
         BehaviourState IBehaviourNode.Run(BehaviourContext context)
         {
-            if (Handler((T)context))
-            {
-                return Node?.Run(context) ?? BehaviourState.Succeed;
-            }
-
-            return BehaviourState.Failed;
+            return InvertState(Node.Run(context));
         }
         
         BehaviourState IBehaviourNode.Resume(BehaviourContext context, BehaviourState innerState)
         {
-            return innerState;
+            return InvertState(innerState);
         }
         
         void IBehaviourNode.Reset()
         {
-            Node?.Reset();
+            Node.Reset();
         }
     }
 }

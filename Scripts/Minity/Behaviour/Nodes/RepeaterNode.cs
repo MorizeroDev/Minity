@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Minity.AI.Nodes
+namespace Minity.Behaviour.Nodes
 {
     public class RepeaterNode<T> : IBehaviourNode where T : BehaviourContext
     {

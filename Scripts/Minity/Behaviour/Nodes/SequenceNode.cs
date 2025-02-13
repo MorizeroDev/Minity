@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Minity.AI.Nodes
+namespace Minity.Behaviour.Nodes
 {
     public class SequenceNode : IBehaviourNode
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Minity.AI.Nodes;
+using Minity.Behaviour.Nodes;
 using Minity.Logger;
 using UnityEngine;
 
-namespace Minity.AI
+namespace Minity.Behaviour
 {
     public abstract class BehaviourTree : MonoBehaviour
     {

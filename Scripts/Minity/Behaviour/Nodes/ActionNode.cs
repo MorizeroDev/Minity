@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Minity.AI.Nodes
+namespace Minity.Behaviour.Nodes
 {
     public class ActionNode<T> : IBehaviourNode where T : BehaviourContext
     {
