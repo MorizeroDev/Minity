@@ -10,7 +10,7 @@ namespace Minity.Variable
         internal static readonly Stack<MinityVariableBase> ChangedSinceLastUpdate = new(); 
         internal static readonly Stack<MinityVariableBase> ChangedSinceLastFixedUpdate = new(); 
         
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         internal static void EnsureInitialized()
         {
             if (Instance)
