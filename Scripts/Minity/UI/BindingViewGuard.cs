@@ -8,7 +8,7 @@ namespace Minity.UI
     public class BindingViewGuard : MonoBehaviour
     {
         internal static BindingViewGuard Instance;
-        internal static readonly HashSet<Action> ScheduledUpdates = new();
+        internal static readonly HashSet<Action> ScheduledUpdates = new HashSet<Action>();
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void EnsureCreated()

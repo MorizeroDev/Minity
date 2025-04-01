@@ -14,7 +14,7 @@ namespace Minity.UI
     {
         protected abstract CultureInfo Formatter { get; }
         
-        private static readonly Regex regex = new (@"{{(.*?)}}", RegexOptions.Compiled);
+        private static readonly Regex regex = new Regex(@"{{(.*?)}}", RegexOptions.Compiled);
         
         private class TextSegment
         {
@@ -28,7 +28,7 @@ namespace Minity.UI
         {
             public TMP_Text Component;
             public CultureInfo Formatter;
-            public List<TextSegment> Segments = new();
+            public List<TextSegment> Segments = new List<TextSegment>();
 
             internal void ScheduleUpdateText(BindingBase sender)
             {
@@ -71,7 +71,7 @@ namespace Minity.UI
             }
         }
         
-        private readonly Dictionary<string, BindingBase> bindings = new();
+        private readonly Dictionary<string, BindingBase> bindings = new Dictionary<string, BindingBase>();
         private bool initialized = false;
 
         private BindingBase GetBinding(string path)

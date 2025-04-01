@@ -7,8 +7,8 @@ namespace Minity.UI
 {
     public static class UIManager
     {
-        internal static readonly Dictionary<EnumIdentifier, UI> UIDict = new();
-        internal static readonly Dictionary<Type, UI> UIDictInternal = new();
+        internal static readonly Dictionary<EnumIdentifier, UI> UIDict = new Dictionary<EnumIdentifier, UI>();
+        internal static readonly Dictionary<Type, UI> UIDictInternal = new Dictionary<Type, UI>();
         
         internal static int CurrentSortingOrder = 1000;
         
@@ -39,9 +39,13 @@ namespace Minity.UI
                     continue;
                 }
 
-                if (!UIDictInternal.TryAdd(u.TypeDefinition, u))
+                if (UIDictInternal.ContainsKey(u.TypeDefinition))
                 {
                     DebugLog.LogError($"Duplicated UI type: {u.TypeDefinition.FullName}");
+                }
+                else
+                {
+                    UIDictInternal.Add(u.TypeDefinition, u);
                 }
             }
 

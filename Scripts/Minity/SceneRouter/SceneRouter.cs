@@ -16,8 +16,8 @@ namespace Minity.SceneRouter
         
         internal static bool Enabled = false;
         
-        internal readonly static Dictionary<EnumIdentifier, SceneRouterNode> Nodes = new();
-        internal readonly static Dictionary<EnumIdentifier, LoadingAnimatorData> LoadingAnimators = new();
+        internal readonly static Dictionary<EnumIdentifier, SceneRouterNode> Nodes = new Dictionary<EnumIdentifier, SceneRouterNode>();
+        internal readonly static Dictionary<EnumIdentifier, LoadingAnimatorData> LoadingAnimators = new Dictionary<EnumIdentifier, LoadingAnimatorData>();
         
         internal static SceneRouterNode RootNode, CurrentNode;
 
@@ -192,7 +192,7 @@ namespace Minity.SceneRouter
                 }
                 return GoTo(RootNode, loadingAnimator);
             }
-            var path = string.Join(PathSeparator, CurrentNode.Path[..^1]);
+            var path = string.Join(PathSeparator.ToString(), CurrentNode.Path.Take(CurrentNode.Path.Length - 1));
             var node = Nodes.Values.FirstOrDefault(x => x.FullPath == path);
             if (node == null)
             {

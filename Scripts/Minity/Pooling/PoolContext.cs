@@ -15,17 +15,17 @@ namespace Minity.Pooling
         public PoolLifeCyclePolicy LifeCyclePolicy { get; internal set; }
         public uint MinimumObjectCount { get; internal set; }
         
-        internal List<PooledEntity> Objects { get; } = new();
+        internal List<PooledEntity> Objects { get; } = new List<PooledEntity>();
         
         internal Type[] ComponentTypes;
         internal object ID;
         
-        internal readonly Queue<uint> UsageRecords = new();
+        internal readonly Queue<uint> UsageRecords = new Queue<uint>();
         internal uint PeriodUsage = 0;
         internal uint CurrentUsage = 0;
         internal uint IdleTick = 0;
         
-        private Stack<PooledEntity> _objectStack { get; } = new();
+        private Stack<PooledEntity> _objectStack { get; } = new Stack<PooledEntity>();
         
         public T GetID<T>() where T : Enum
         {
@@ -121,13 +121,15 @@ namespace Minity.Pooling
                     ObjectPool.CreateScenePoolGuard();
                 }
             }
-            
-            if (!_objectStack.TryPop(out var collection))
+
+            PooledEntity collection = null;
+            if (_objectStack.Count == 0)
             {
                 collection = Produce();
             }
             else
             {
+                collection = _objectStack.Pop();
                 collection.PoolableController.OnReset?.Invoke();
             }
 

@@ -22,7 +22,7 @@ namespace Minity.Pooling
         public Transform Transform { get; internal set; }
         public PoolableObject PoolableController { get; internal set; }
         internal Component MainComponent { get; set; }
-        internal Dictionary<Type, Component> Components { get; } = new();
+        internal Dictionary<Type, Component> Components { get; } = new Dictionary<Type, Component>();
 
         public T GetComponent<T>() where T : Component
         {

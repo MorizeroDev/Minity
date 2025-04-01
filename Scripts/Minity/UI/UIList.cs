@@ -13,6 +13,6 @@ namespace Minity.UI
             public ManagedUI UI;
             public UIMode Mode;
         }
-        public List<UIConfig> List = new();
+        public List<UIConfig> List = new List<UIConfig>();
     }
 }

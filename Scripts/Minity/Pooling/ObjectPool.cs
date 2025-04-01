@@ -18,8 +18,8 @@ namespace Minity.Pooling
         /// </summary>
         public static bool AutoReleaseUnusedObjects { get; set; } = true;
         
-        internal static readonly Dictionary<EnumIdentifier, PoolContext> contexts = new();
-        internal static readonly Dictionary<GameObject, PoolableObject> objectDict = new();
+        internal static readonly Dictionary<EnumIdentifier, PoolContext> contexts = new Dictionary<EnumIdentifier, PoolContext>();
+        internal static readonly Dictionary<GameObject, PoolableObject> objectDict = new Dictionary<GameObject, PoolableObject>();
 
         private static bool initialized = false;
 

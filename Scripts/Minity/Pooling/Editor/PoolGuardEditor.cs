@@ -10,8 +10,8 @@ namespace Minity.Pooling.Editor
     [CustomEditor(typeof(PoolGuard))]
     public class PoolGuardEditor : UnityEditor.Editor
     {
-        private static Dictionary<PoolLifeCyclePolicy, bool> foldout = new();
-        private static Dictionary<PoolLifeCyclePolicy, PoolContext> objFoldout = new();
+        private static Dictionary<PoolLifeCyclePolicy, bool> foldout = new Dictionary<PoolLifeCyclePolicy, bool>();
+        private static Dictionary<PoolLifeCyclePolicy, PoolContext> objFoldout = new Dictionary<PoolLifeCyclePolicy, PoolContext>();
         public override void OnInspectorGUI()
         {
             EditorGUILayout.LabelField("Active prefab count: " + ObjectPool.contexts.Count);

@@ -10,7 +10,7 @@ namespace Minity.Variable.Editor
     [InitializeOnLoad]
     public class MinityVariableReset
     {
-        public static readonly Stack<MinityVariableBase> Variables = new();
+        public static readonly Stack<MinityVariableBase> Variables = new Stack<MinityVariableBase>();
         
         static MinityVariableReset()
         {
@@ -21,9 +21,9 @@ namespace Minity.Variable.Editor
         {
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                while (Variables.TryPop(out var variable))
+                while (Variables.Count > 0)
                 {
-                    variable.ResetToInitial();
+                    Variables.Pop().ResetToInitial();
                 }
             }
         }

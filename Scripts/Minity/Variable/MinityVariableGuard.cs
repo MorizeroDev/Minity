@@ -7,8 +7,8 @@ namespace Minity.Variable
     public class MinityVariableGuard : MonoBehaviour
     {
         internal static MinityVariableGuard Instance;
-        internal static readonly Stack<MinityVariableBase> ChangedSinceLastUpdate = new(); 
-        internal static readonly Stack<MinityVariableBase> ChangedSinceLastFixedUpdate = new(); 
+        internal static readonly Stack<MinityVariableBase> ChangedSinceLastUpdate = new Stack<MinityVariableBase>(); 
+        internal static readonly Stack<MinityVariableBase> ChangedSinceLastFixedUpdate = new Stack<MinityVariableBase>(); 
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         internal static void EnsureInitialized()
@@ -26,17 +26,17 @@ namespace Minity.Variable
 
         private void FixedUpdate()
         {
-            while (ChangedSinceLastFixedUpdate.TryPop(out var variable))
+            while (ChangedSinceLastFixedUpdate.Count > 0)
             {
-                variable.ChangedSinceLastFixedUpdate = false;
+                ChangedSinceLastFixedUpdate.Pop().ChangedSinceLastFixedUpdate = false;
             }
         }
 
         private void LateUpdate()
         {
-            while (ChangedSinceLastUpdate.TryPop(out var variable))
+            while (ChangedSinceLastUpdate.Count > 0)
             {
-                variable.ChangedSinceLastUpdate = false;
+                ChangedSinceLastUpdate.Pop().ChangedSinceLastUpdate = false;
             }
         }
     }

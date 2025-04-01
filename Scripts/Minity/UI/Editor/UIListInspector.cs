@@ -76,7 +76,7 @@ namespace Minity.UI.Editor
                             foldoutSet.Remove(ui);
                         }
                     }
-                    if (EditorGUILayout.LinkButton(EditorGUIUtility.IconContent("Toolbar Minus")))
+                    if (GUILayout.Button(EditorGUIUtility.IconContent("Toolbar Minus")))
                     {
                         list.List.RemoveAt(i);
                         i--;

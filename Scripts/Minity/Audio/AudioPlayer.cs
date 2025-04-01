@@ -46,9 +46,9 @@ namespace Minity.Audio
 
             var list = new List<PlayerData>
             {
-                new (AudioPlayerType.BGMPlayer, GenerateAudioSource(true), 0.5f),
-                new (AudioPlayerType.BGSPlayer, GenerateAudioSource(true), 0.5f),
-                new (AudioPlayerType.SndPlayer, GenerateAudioSource(false), 1f)
+                new PlayerData(AudioPlayerType.BGMPlayer, GenerateAudioSource(true), 0.5f),
+                new PlayerData(AudioPlayerType.BGSPlayer, GenerateAudioSource(true), 0.5f),
+                new PlayerData(AudioPlayerType.SndPlayer, GenerateAudioSource(false), 1f)
             };
 
             players = list.ToArray();

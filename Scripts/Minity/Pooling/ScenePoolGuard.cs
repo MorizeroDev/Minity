@@ -12,8 +12,8 @@ namespace Minity.Pooling
     {
         public static ScenePoolGuard Instance { get; private set; }
         
-        internal static readonly List<EnumIdentifier> PrefabInScene = new();
-        internal readonly StringBuilder DestroyRecords = new();
+        internal static readonly List<EnumIdentifier> PrefabInScene = new List<EnumIdentifier>();
+        internal readonly StringBuilder DestroyRecords = new StringBuilder();
 
         private void Awake()
         {

@@ -7,7 +7,7 @@ namespace Minity.Infra
 {
     public class SceneSingleton : MonoBehaviour
     {
-        private static readonly Dictionary<Type, Object> instances = new();
+        private static readonly Dictionary<Type, Object> instances = new Dictionary<Type, Object>();
 
         public static T Get<T>() where T : Object
         {
@@ -27,13 +27,17 @@ namespace Minity.Infra
         public static void Register<T>(T instance) where T : Object
         {
             var type = typeof(T);
-            if (!instances.TryAdd(type, instance))
+            if (instances.ContainsKey(type))
             {
                 if (instances[type])
                 {
                     Debug.LogWarning($"'{type.Name}' instance is duplicated.");
                 }
                 instances[type] = instance;
+            }
+            else
+            {
+                instances.Add(type, instance);
             }
         }
     }

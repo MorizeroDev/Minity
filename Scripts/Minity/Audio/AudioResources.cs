@@ -28,7 +28,7 @@ namespace Minity.Audio
         }
 
         [SerializeField]
-        public List<AudioItem> Items = new();
+        public List<AudioItem> Items = new List<AudioItem>();
         
         private void OnEnable()
         {
@@ -63,9 +63,13 @@ namespace Minity.Audio
             foreach (var item in Items)
             {
                 var key = EnumIdentifier.Wrap(item.Identifier);
-                if (!dictionary.TryAdd(key, item.Clip))
+                if (dictionary.ContainsKey(key))
                 {
                     DebugLog.LogError($"Specific audio resources '{key}' is duplicated.");
+                }
+                else
+                {
+                    dictionary.Add(key, item.Clip);
                 }
             }
         }

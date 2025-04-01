@@ -8,7 +8,7 @@ namespace Minity.Audio
 {
     public class AudioManager
     {
-        internal static readonly Dictionary<EnumIdentifier, AudioClip> ResourcesList = new();
+        internal static readonly Dictionary<EnumIdentifier, AudioClip> ResourcesList = new Dictionary<EnumIdentifier, AudioClip>();
         internal static bool Enabled = false;
         internal static AudioPlayer Player;
         

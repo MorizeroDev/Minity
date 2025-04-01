@@ -58,7 +58,7 @@ namespace Minity.UI
 
     public abstract class BindingBase
     {
-        internal readonly HashSet<TMP_Text> Components = new();
+        internal readonly HashSet<TMP_Text> Components = new HashSet<TMP_Text>();
         internal event OnBindingChangedDelegate OnValueChanged;
         internal abstract object GetValue();
 

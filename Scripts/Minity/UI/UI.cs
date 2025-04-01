@@ -90,7 +90,7 @@ namespace Minity.UI
                 type = type.BaseType;
             }
             
-            if (identifier is BuiltinUI and BuiltinUI.AnonymousUI && type == typeof(SimpleManagedUI))
+            if (identifier is BuiltinUI id && id == BuiltinUI.AnonymousUI && type == typeof(SimpleManagedUI))
             {
                 throw new Exception($"SimpleManagedUI '{identifier}'({prefab.name}) must have an identifier.");
             }
