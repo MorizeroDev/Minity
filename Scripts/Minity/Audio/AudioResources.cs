@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Minity.Logger;
 using Minity.General;
+using Paraparty.UnityPolyfill;
 using UnityEngine;
 
 namespace Minity.Audio
@@ -63,13 +64,9 @@ namespace Minity.Audio
             foreach (var item in Items)
             {
                 var key = EnumIdentifier.Wrap(item.Identifier);
-                if (dictionary.ContainsKey(key))
+                if (!dictionary.TryAdd(key, item.Clip))
                 {
                     DebugLog.LogError($"Specific audio resources '{key}' is duplicated.");
-                }
-                else
-                {
-                    dictionary.Add(key, item.Clip);
                 }
             }
         }

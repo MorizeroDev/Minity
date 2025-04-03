@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Minity.Logger;
+using Paraparty.UnityPolyfill;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -122,14 +123,12 @@ namespace Minity.Pooling
                 }
             }
 
-            PooledEntity collection = null;
-            if (_objectStack.Count == 0)
+            if (!_objectStack.TryPop(out var collection))
             {
                 collection = Produce();
             }
             else
             {
-                collection = _objectStack.Pop();
                 collection.PoolableController.OnReset?.Invoke();
             }
 

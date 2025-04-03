@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Minity.Logger;
 using Minity.General;
+using Paraparty.UnityPolyfill;
 
 namespace Minity.UI
 {
@@ -39,13 +40,9 @@ namespace Minity.UI
                     continue;
                 }
 
-                if (UIDictInternal.ContainsKey(u.TypeDefinition))
+                if (!UIDictInternal.TryAdd(u.TypeDefinition, u))
                 {
                     DebugLog.LogError($"Duplicated UI type: {u.TypeDefinition.FullName}");
-                }
-                else
-                {
-                    UIDictInternal.Add(u.TypeDefinition, u);
                 }
             }
 

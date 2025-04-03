@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Paraparty.UnityPolyfill;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,9 +22,9 @@ namespace Minity.Variable.Editor
         {
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
-                while (Variables.Count > 0)
+                while (Variables.TryPop(out var variable))
                 {
-                    Variables.Pop().ResetToInitial();
+                    variable.ResetToInitial();
                 }
             }
         }

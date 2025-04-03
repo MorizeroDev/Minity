@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Paraparty.UnityPolyfill;
 using UnityEngine;
 
 namespace Minity.Variable
@@ -26,17 +27,17 @@ namespace Minity.Variable
 
         private void FixedUpdate()
         {
-            while (ChangedSinceLastFixedUpdate.Count > 0)
+            while (ChangedSinceLastFixedUpdate.TryPop(out var variable))
             {
-                ChangedSinceLastFixedUpdate.Pop().ChangedSinceLastFixedUpdate = false;
+                variable.ChangedSinceLastFixedUpdate = false;
             }
         }
 
         private void LateUpdate()
         {
-            while (ChangedSinceLastUpdate.Count > 0)
+            while (ChangedSinceLastUpdate.TryPop(out var variable))
             {
-                ChangedSinceLastUpdate.Pop().ChangedSinceLastUpdate = false;
+                variable.ChangedSinceLastUpdate = false;
             }
         }
     }

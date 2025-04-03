@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Paraparty.UnityPolyfill;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -27,17 +28,13 @@ namespace Minity.Infra
         public static void Register<T>(T instance) where T : Object
         {
             var type = typeof(T);
-            if (instances.ContainsKey(type))
+            if (!instances.TryAdd(type, instance))
             {
                 if (instances[type])
                 {
                     Debug.LogWarning($"'{type.Name}' instance is duplicated.");
                 }
                 instances[type] = instance;
-            }
-            else
-            {
-                instances.Add(type, instance);
             }
         }
     }
