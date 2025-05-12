@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using Minity.Logger;
 using Minity.General;
+#if !NET_STANDARD_2_1
 using Paraparty.UnityPolyfill;
+#endif
 
 namespace Minity.UI
 {

@@ -2,7 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+#if !NET_STANDARD_2_1
 using Paraparty.UnityPolyfill;
+#endif
 using UnityEditor;
 using UnityEngine;
 

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Reflection;
 using Minity.Logger;
 using Minity.General;
+#if !NET_STANDARD_2_1
 using Paraparty.UnityPolyfill;
+#endif
 using UnityEngine;
 
 namespace Minity.Audio

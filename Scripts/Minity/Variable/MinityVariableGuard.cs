@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !NET_STANDARD_2_1
 using Paraparty.UnityPolyfill;
+#endif
 using UnityEngine;
 
 namespace Minity.Variable

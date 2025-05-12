@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Minity.Logger;
+#if !NET_STANDARD_2_1
 using Paraparty.UnityPolyfill;
+#endif
 using UnityEngine;
 using Object = UnityEngine.Object;
 
