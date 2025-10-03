@@ -126,6 +126,7 @@ namespace Minity.Pooling
             Using = false;
             _pooledEntity.Transform.SetParent(null);
             _parentContext.ReturnToPool(_pooledEntity);
+            returnTick = 0f;
         }
         
         private void FixedUpdate()
