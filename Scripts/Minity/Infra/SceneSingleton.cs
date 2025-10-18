@@ -27,6 +27,15 @@ namespace Minity.Infra
             return (T)instance;
         }
 
+		public static bool Exist<T>() where T : Object
+		{
+            if (!instances.TryGetValue(typeof(T), out var instance) || !instance)
+            {
+                return false;
+            }
+			return true;
+		}
+
         public static void Register<T>(T instance) where T : Object
         {
             var type = typeof(T);
