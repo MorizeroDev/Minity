@@ -267,3 +267,89 @@ During loading, you can get the loading progress via the `base.Progress` propert
 Once the scene is fully loaded, the router will call `OnLoaded()`, where you should play the closing animation and call `FinishLoading()` to inform the router that everything is complete.
 
 You can then associate these loading animation prefabs with enum values in the scene router configuration and use them during scene transitions.
+
+
+## **EventBus**
+
+EventBus is a small, type-based global event bus that pairs Unity's `UnityEvent<T>` with a central registry so you can wire callbacks in the Inspector and publish events from code.
+
+First, the building blocks:
+
+- `IEventArgs` — empty marker interface. All event argument classes should implement this so they can be used with EventBus and Unity serialization.
+- `SerializableEvent<T>` — a `[Serializable]` wrapper over `UnityEvent<T>` (where `T : IEventArgs`). Use this if you want Inspector-exposed callbacks.
+- `EventBus` — a global singleton (`GlobalSingleton<EventBus>`) that holds a dictionary of registered `SerializableEvent<T>` instances keyed by the argument type.
+
+How it works (API):
+
+- `Register<T>(SerializableEvent<T> evt) where T : IEventArgs` — register an inspector-configurable event. Only one registration per argument type is allowed (duplicates log an error).
+- `Unregister<T>() where T : IEventArgs` — remove a registration for the given argument type.
+- `Publish<T>(T args) where T : IEventArgs` — publish an event instance; all listeners on the registered `SerializableEvent<T>` will be invoked. Publishing an unregistered type logs a warning.
+
+Quick example:
+
+1) Define your event args:
+
+```csharp
+[System.Serializable]
+public class TestEventArgs : Minity.Event.IEventArgs
+{
+    [SerializeField] private string message;
+    [SerializeField] private int count;
+
+    public string Message => message;
+    public int Count => count;
+
+    public TestEventArgs(string msg, int cnt)
+    {
+        message = msg;
+        count = cnt;
+    }
+}
+```
+
+2) Expose a `SerializableEvent<T>` on a MonoBehaviour and register it in `Awake()`:
+
+```csharp
+public class TestEventDeclarations : MonoBehaviour
+{
+    [SerializeField] public SerializableEvent<TestEventArgs> onTestEvent;
+
+    private void Awake()
+    {
+        EventBus.Instance.Register(onTestEvent);
+        onTestEvent.AddListener(OnTest);
+    }
+
+    private void OnTest(TestEventArgs args)
+    {
+        Debug.Log(args.Message);
+    }
+}
+```
+
+3) Publish from anywhere:
+
+```csharp
+EventBus.Instance.Publish(new TestEventArgs("hello", 123));
+```
+
+4) Unregister when needed:
+
+```csharp
+EventBus.Instance.Unregister<TestEventArgs>();
+```
+
+Editor tooling:
+
+- In the Editor, EventBus tracks registered argument types (useful for debugging).
+- `EventArgsPublishWindow` allows you to construct `IEventArgs` instances and publish them from the Editor for quick testing.
+
+Notes & best practices:
+
+- Only one `SerializableEvent<T>` should be registered per argument type. Calling `Register` twice for the same type will log an error.
+- Publishing an unregistered event will not throw but will log a warning — helpful during development.
+- The underlying mechanism is `UnityEvent<T>`, so listeners and invocations are expected to run on the main Unity thread.
+- Prefer registering in `Awake()` and unregistering (if needed) in `OnDestroy()` to match object lifecycles.
+- Make event argument classes `[System.Serializable]` so they are editable in Inspector and compatible with the editor publish window.
+
+In short: EventBus gives you an Inspector-friendly, type-safe global event channel that keeps systems decoupled while allowing visual wiring of callbacks.
