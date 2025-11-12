@@ -5,5 +5,4 @@ namespace Minity.Event
     public interface IEventArgs
     {
     }
-
 }

@@ -4,6 +4,8 @@ using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditorInternal;
 
 namespace Minity.Event.Editor
 {
@@ -140,6 +142,36 @@ namespace Minity.Event.Editor
                 }
 
                 EditorGUILayout.Space();
+
+                // Show runtime subscribers for the selected event type
+                try
+                {
+                    var subscribers = EventBus.Instance.GetSubscribers(selectedType).ToList();
+                    EditorGUILayout.LabelField($"Subscribers: {subscribers.Count}", EditorStyles.boldLabel);
+                    foreach (var s in subscribers)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"{s.DeclaringType}.{s.MethodName}", GUILayout.ExpandWidth(true));
+                        if (s.Target is UnityEngine.Object uobj)
+                        {
+                            EditorGUILayout.ObjectField(uobj, typeof(UnityEngine.Object), true, GUILayout.Width(200));
+                            if (GUILayout.Button("Select", GUILayout.Width(60)))
+                            {
+                                Selection.activeObject = uobj;
+                                EditorGUIUtility.PingObject(uobj);
+                            }
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField(s.Target != null ? s.Target.ToString() : "<static>", GUILayout.Width(200));
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                }
+                catch (Exception)
+                {
+                    // ignore subscriber introspection errors in editor window
+                }
 
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Publish", GUILayout.Height(28)))

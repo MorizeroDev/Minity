@@ -271,23 +271,18 @@ You can then associate these loading animation prefabs with enum values in the s
 
 ## **EventBus**
 
-EventBus is a small, type-based global event bus that pairs Unity's `UnityEvent<T>` with a central registry so you can wire callbacks in the Inspector and publish events from code.
+Minity's EventBus is a simple, type-driven global event system for Unity. It helps you decouple your code and wire up callbacks both in code and (where supported) in the Inspector.
 
-First, the building blocks:
+**How it works:**
 
-- `IEventArgs` — empty marker interface. All event argument classes should implement this so they can be used with EventBus and Unity serialization.
-- `SerializableEvent<T>` — a `[Serializable]` wrapper over `UnityEvent<T>` (where `T : IEventArgs`). Use this if you want Inspector-exposed callbacks.
-- `EventBus` — a global singleton (`GlobalSingleton<EventBus>`) that holds a dictionary of registered `SerializableEvent<T>` instances keyed by the argument type.
+- Define your event argument class by implementing `IEventArgs` (an empty marker interface).
+- Use `Subscribe<T>(Action<T>)` to lazily register and attach a listener—no explicit registration needed.
+- Use `Unsubscribe<T>(Action<T>)` to remove a listener—if no subscribers remain, the event is automatically unregistered.
+- Publish events with `EventBus.Instance.Publish<T>(args)`.
 
-How it works (API):
+**Quick Example:**
 
-- `Register<T>(SerializableEvent<T> evt) where T : IEventArgs` — register an inspector-configurable event. Only one registration per argument type is allowed (duplicates log an error).
-- `Unregister<T>() where T : IEventArgs` — remove a registration for the given argument type.
-- `Publish<T>(T args) where T : IEventArgs` — publish an event instance; all listeners on the registered `SerializableEvent<T>` will be invoked. Publishing an unregistered type logs a warning.
-
-Quick example:
-
-1) Define your event args:
+1. Define your event args:
 
 ```csharp
 [System.Serializable]
@@ -307,49 +302,43 @@ public class TestEventArgs : Minity.Event.IEventArgs
 }
 ```
 
-2) Expose a `SerializableEvent<T>` on a MonoBehaviour and register it in `Awake()`:
+2. Subscribe in your MonoBehaviour (lazy registration):
 
 ```csharp
-public class TestEventDeclarations : MonoBehaviour
+void Awake()
 {
-    [SerializeField] public SerializableEvent<TestEventArgs> onTestEvent;
+    EventBus.Instance.Subscribe<TestEventArgs>(OnTest);
+}
 
-    private void Awake()
-    {
-        EventBus.Instance.Register(onTestEvent);
-        onTestEvent.AddListener(OnTest);
-    }
-
-    private void OnTest(TestEventArgs args)
-    {
-        Debug.Log(args.Message);
-    }
+void OnTest(TestEventArgs args)
+{
+    Debug.Log($"Received: {args.Message}, Count: {args.Count}");
 }
 ```
 
-3) Publish from anywhere:
+3. Publish events from anywhere:
 
 ```csharp
-EventBus.Instance.Publish(new TestEventArgs("hello", 123));
+EventBus.Instance.Publish(new TestEventArgs("Hello I'm 179", 114514));
 ```
 
-4) Unregister when needed:
+4. Unsubscribe when done (auto-unregisters if no subscribers remain):
 
 ```csharp
-EventBus.Instance.Unregister<TestEventArgs>();
+EventBus.Instance.Unsubscribe<TestEventArgs>(OnTest);
 ```
 
-Editor tooling:
+**Editor Support:**
 
-- In the Editor, EventBus tracks registered argument types (useful for debugging).
-- `EventArgsPublishWindow` allows you to construct `IEventArgs` instances and publish them from the Editor for quick testing.
+- In the Editor, you can query registered event types for debugging.
+- The `EventArgsPublishWindow` lets you create and publish events for testing.
 
-Notes & best practices:
+**Tips:**
 
-- Only one `SerializableEvent<T>` should be registered per argument type. Calling `Register` twice for the same type will log an error.
-- Publishing an unregistered event will not throw but will log a warning — helpful during development.
-- The underlying mechanism is `UnityEvent<T>`, so listeners and invocations are expected to run on the main Unity thread.
-- Prefer registering in `Awake()` and unregistering (if needed) in `OnDestroy()` to match object lifecycles.
-- Make event argument classes `[System.Serializable]` so they are editable in Inspector and compatible with the editor publish window.
+- `Subscribe` handles lazy registration—just subscribe and the event type is automatically created if needed.
+- `Unsubscribe` automatically cleans up events with no remaining subscribers, saving memory.
+- Only one registration per event type is allowed. Duplicate registrations log an error.
+- Publishing an unregistered event type logs a warning (no exception).
+- Make your event args `[System.Serializable]` for Inspector and tooling support.
 
-In short: EventBus gives you an Inspector-friendly, type-safe global event channel that keeps systems decoupled while allowing visual wiring of callbacks.
+EventBus gives you a clean, Inspector-friendly, type-safe way to broadcast events and keep your systems decoupled.
