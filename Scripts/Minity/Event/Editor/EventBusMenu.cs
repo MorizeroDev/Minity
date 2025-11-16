@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 
 namespace Minity.Event.Editor
@@ -17,3 +18,4 @@ namespace Minity.Event.Editor
         }
     }
 }
+#endif
