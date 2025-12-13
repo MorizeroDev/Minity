@@ -2,7 +2,7 @@
 
 namespace Minity.General
 {
-    public struct EnumIdentifier
+    public struct EnumIdentifier : IEquatable<EnumIdentifier>
     {
         public int Value;
         public Type Type;
@@ -13,7 +13,9 @@ namespace Minity.General
         {
             return new EnumIdentifier()
             {
-                Value = (int)(object)identifier,
+                // the hash code of an integer is itself
+                // this avoids boxing to cast the value
+                Value = identifier.GetHashCode(),
                 Type = typeof(T)
             };
         }
@@ -22,7 +24,7 @@ namespace Minity.General
         {
             return new EnumIdentifier()
             {
-                Value = (int)(object)identifier,
+                Value = identifier.GetHashCode(),
                 Type = type
             };
         }
@@ -32,17 +34,28 @@ namespace Minity.General
             var type = identifier.GetType();
             return new EnumIdentifier()
             {
-                Value = (int)(object)identifier,
+                Value = identifier.GetHashCode(),
                 Type = type
             };
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is not EnumIdentifier other) return false;
+            return Value == other.Value && Type == other.Type;
+        }
+        
+        public bool Equals(EnumIdentifier other)
+        {
+            return Value == other.Value && Type == other.Type;
+        }
+        
         public override int GetHashCode()
         {
             unchecked
             {
                 var hash = 17;
-                hash = hash * 31 + Value.GetHashCode();
+                hash = hash * 31 + Value;
                 hash = hash * 31 + Type.GetHashCode();
                 return hash;
             }
@@ -52,7 +65,7 @@ namespace Minity.General
         {
             if (string.IsNullOrEmpty(Name))
             {
-                Name = Type.FullName + "." + Value;
+                Name = Type.FullName + "." + Enum.GetName(Type, Value);
             }
             return Name;
         }
