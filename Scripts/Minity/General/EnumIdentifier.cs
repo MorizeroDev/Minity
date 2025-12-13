@@ -14,8 +14,7 @@ namespace Minity.General
             return new EnumIdentifier()
             {
                 Value = (int)(object)identifier,
-                Type = typeof(T),
-                Name = typeof(T).FullName + "." + identifier
+                Type = typeof(T)
             };
         }
         
@@ -24,8 +23,7 @@ namespace Minity.General
             return new EnumIdentifier()
             {
                 Value = (int)(object)identifier,
-                Type = type,
-                Name = type.FullName + "." + identifier
+                Type = type
             };
         }
         
@@ -35,13 +33,16 @@ namespace Minity.General
             return new EnumIdentifier()
             {
                 Value = (int)(object)identifier,
-                Type = type,
-                Name = type.FullName + "." + identifier
+                Type = type
             };
         }
 
         public override string ToString()
         {
+            if (string.IsNullOrEmpty(Name))
+            {
+                Name = Type.FullName + "." + Value;
+            }
             return Name;
         }
     }

@@ -95,7 +95,7 @@ namespace Minity.Pooling
             }
             else
             {
-                Debug.LogWarning($"Prefab {key} is not registered, no need to unregister.");
+                DebugLog.LogWarning($"Prefab {key} is not registered, no need to unregister.");
             }
         }
         
