@@ -37,6 +37,17 @@ namespace Minity.General
             };
         }
 
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = 17;
+                hash = hash * 31 + Value.GetHashCode();
+                hash = hash * 31 + Type.GetHashCode();
+                return hash;
+            }
+        }
+        
         public override string ToString()
         {
             if (string.IsNullOrEmpty(Name))

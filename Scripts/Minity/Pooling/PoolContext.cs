@@ -49,7 +49,9 @@ namespace Minity.Pooling
         private PooledEntity Produce()
         {
             var gameObject = Object.Instantiate(Prefab, GetPoolParent());
+#if UNITY_EDITOR
             gameObject.name = $"[RE{gameObject.GetInstanceID()}] {Name}";
+#endif
             gameObject.SetActive(false);
             
             var poolableObject = gameObject.GetComponent<PoolableObject>();
