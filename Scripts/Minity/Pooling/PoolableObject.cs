@@ -49,7 +49,9 @@ namespace Minity.Pooling
             _pooledEntity = collection;
             _objectHash = GetHashCode();
             
+#if UNITY_EDITOR
             DebugLog.Log($"PoolableObject created: Hash={_objectHash}, Name={gameObject.name}, PrefabName={context.Name}");
+#endif
         }
         
         private void OnDestroy()
