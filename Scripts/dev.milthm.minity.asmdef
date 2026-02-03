@@ -6,7 +6,9 @@
         "GUID:5baad4e8b0c589044b804563fec3b23b",
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:bb775c4a28c173f4a81035e4d2cff768",
-        "GUID:b9110418f5f00484e89198f034f1d7d7"
+        "GUID:b9110418f5f00484e89198f034f1d7d7",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:84651a3751eca9349aac36a66bba901b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -15,6 +17,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "1.22.2",
+            "define": "UNITY_ENABLE_ADDRESSABLES"
+        }
+    ],
     "noEngineReferences": false
 }
