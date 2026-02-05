@@ -41,17 +41,22 @@ namespace Minity.ResourceManager
         }
         
         private const int DEFAULT_RES_TIME_OUT = 3000;
-        
+
+        private static bool _initialized = false;
         private static readonly Dictionary<string, Type> _resScheme = new();
         
         private readonly Dictionary<string, ResHandle> _resources = new();
         private readonly List<ResHandle> _trackingRes = new();
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         private static void InitializeResSchemes()
         {
+            if (_initialized)
+            {
+                return;
+            }
+            
             var baseType = typeof(IResHandler);
-
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             
             var types = assemblies.SelectMany(assembly =>
@@ -78,6 +83,8 @@ namespace Minity.ResourceManager
                 }
                 _resScheme.Add(attribute.Scheme, type);
             }
+
+            _initialized = true;
         }
         
         private async Task<Object> LoadAsyncInternal<T>(ResHandle handle) where T : Object
@@ -139,6 +146,11 @@ namespace Minity.ResourceManager
         
         private ResHandle RegisterResource(string uriStr)
         {
+            if (!_initialized)
+            {
+                InitializeResSchemes();
+            }
+            
             if (!Uri.TryCreate(uriStr, UriKind.Absolute, out var uri))
             {
                 throw new Exception($"Invalid uri '{uri}'");
@@ -146,7 +158,7 @@ namespace Minity.ResourceManager
 
             if (!_resScheme.TryGetValue(uri.Scheme, out var scheme))
             {
-                throw new Exception($"Invalid scheme '{scheme}'");
+                throw new Exception($"Invalid scheme '{uri.Scheme}'");
             }
 
             var handle = new ResHandle()
