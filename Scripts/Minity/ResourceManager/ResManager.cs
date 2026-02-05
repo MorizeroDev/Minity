@@ -47,7 +47,7 @@ namespace Minity.ResourceManager
         private readonly Dictionary<string, ResHandle> _resources = new();
         private readonly List<ResHandle> _trackingRes = new();
 
-        [InitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void InitializeResSchemes()
         {
             var baseType = typeof(IResHandler);
