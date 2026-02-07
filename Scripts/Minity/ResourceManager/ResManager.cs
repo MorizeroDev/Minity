@@ -89,8 +89,18 @@ namespace Minity.ResourceManager
         
         private async Task<Object> LoadAsyncInternal<T>(ResHandle handle) where T : Object
         {
-            handle.Resource = await handle.Handler.LoadAsync<T>();
-            return handle.Resource ?? throw new Exception($"Resource load failed: {handle.UriStr}");
+            try
+            {
+                handle.Resource = await handle.Handler.LoadAsync<T>();
+                return handle.Resource ?? throw new Exception($"Resource load failed: {handle.UriStr}");
+            }
+            finally
+            {
+                lock (handle)
+                {
+                    handle.LoadTask = null;
+                }
+            }
         }
         
         public async Task<T> LoadAsync<T>(string uriStr, IUsageDetector detector, int timeOut = DEFAULT_RES_TIME_OUT) where T : Object
